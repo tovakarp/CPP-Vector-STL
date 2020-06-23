@@ -6,7 +6,11 @@ int main(){
 
 	v2 = v1;
 	
-	v2[3] = 569;
+	v1.resize(6, 9);
+	
+	std::cout << v1;
+	
+	v2.back() = 569;
 	
 	std::cout << v2;
 	
