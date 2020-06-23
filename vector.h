@@ -9,15 +9,17 @@
 template <typename T>
 class Vector{
 public:
-	/*CTOR*/
+	// CTOR
 	Vector();
 	Vector(size_t size, T val = T());
 	Vector(const Vector &other);
 	
-	/*DTOR*/
+	// DTOR
 	~Vector();
 	
 	Vector& operator=(const Vector &other);
+	
+	// Capacity
 	
 	size_t size() const;
 	
@@ -30,6 +32,8 @@ public:
 	bool empty() const;
 	
 	void reserve (size_t size);
+	
+	// Element Access
 	
 	const T& operator[] (size_t index) const;
 	T& operator[] (size_t index);
@@ -46,7 +50,23 @@ public:
 	T* data();
 	const T* data() const;
 	
+	// Modifiers​
+	
 	void assign (size_t size, const T& val);
+	
+	void push_back (const T& val);
+	
+	void pop_back();
+	
+	void insert(size_t index, const T &val);
+	void insert(size_t index, size_t n, const T &val);
+	
+	void erase(size_t index);
+	void erase (size_t firstIndex, size_t lastIndex);
+	
+	void swap (Vector& other);
+	
+	void clear();
 	
 	friend std::ostream& operator<<(std::ostream &os, const Vector &v){
 		
@@ -144,22 +164,6 @@ inline void Vector<T>::resize (size_t size, T val){
         m_arrPtr[i] = val;
 		
 	m_size = size;
-	
-	/*T *tmp = new T[size];
-
-    size_t min = size < m_size? size : m_size;
-
-    for (size_t i = 0; i < min; ++i)
-        tmp[i] = m_arrPtr[i];
-
-    for (size_t i = min; i < size; ++i)
-        tmp[i] = val;
-
-    delete[] m_arrPtr;
-    
-    m_arrPtr = tmp;
-    m_size = size;
-    m_capacity = size;*/
 }
 
 
@@ -177,7 +181,10 @@ template <typename T>
 void Vector<T>::reserve (size_t size){
 	while (m_capacity < size){
 		try{
-			T *tmp = new T[2 * m_capacity];
+			T *tmp;
+			if(!m_capacity)
+				tmp = new T[2];
+			else tmp = new T[2 * m_capacity];
 			
 			for(size_t i = 0; i < m_size; ++i)
 				tmp[i] = m_arrPtr[i];
@@ -185,7 +192,7 @@ void Vector<T>::reserve (size_t size){
 			delete[] m_arrPtr;
 			
 			m_arrPtr = tmp;
-			m_capacity *= 2;
+			m_capacity = !m_capacity? 2 : m_capacity * 2;
 		}
 		
 		catch(std::bad_alloc &ba){
@@ -254,6 +261,96 @@ inline const T* Vector<T>::data() const {
 template <typename T>
 inline T* Vector<T>::data() {
 	return m_arrPtr;
+}
+
+template <typename T>
+inline void Vector<T>::assign (size_t size, const T& val){
+	
+	reserve(size);
+	
+	for(size_t i = 0; i < size; ++i)
+		m_arrPtr[i] = val;
+			
+	m_size = size;
+}
+
+template <typename T>
+inline void Vector<T>::push_back (const T& val){
+
+	if(m_size + 1 > m_capacity)
+		reserve(m_size + 1);
+		
+	++m_size;
+	
+	back() = val;
+}
+
+template <typename T>
+inline void Vector<T>::pop_back (){
+	--m_size;
+}
+
+template <typename T>
+inline void Vector<T>::insert (size_t index, const T &val){
+	insert(index, 1, val);
+}
+
+template <typename T>
+inline void Vector<T>::insert (size_t index, size_t n, const T &val){
+
+	if(index > m_size)
+		throw std::out_of_range("Index does not exist...\n");
+
+	reserve(m_size + n);
+	
+	for(size_t i = index; i < m_size; ++i)
+		m_arrPtr[i + n] = m_arrPtr[i];
+		
+	for(size_t i = index; i < index + n; ++i)
+		m_arrPtr[i] = val;
+		
+	m_size += n;
+}
+
+template <typename T>
+inline void Vector<T>::erase(size_t index){
+	erase(index, index + 1);
+}
+
+template <typename T>
+inline void Vector<T>::erase(size_t firstIndex, size_t lastIndex){
+	
+	if(lastIndex < firstIndex or lastIndex > m_size)
+		throw std::out_of_range("Index does not exist...\n");
+		
+	for(size_t i = firstIndex, j = lastIndex; i < m_size; ++i, ++j)
+		m_arrPtr[i] = m_arrPtr[j];
+		
+	m_size -= lastIndex - firstIndex;
+}
+template <typename T>
+inline void Vector<T>::swap (Vector& other){
+
+	m_size > other.m_size? other.reserve(m_size) : reserve(other.m_size);
+	
+	//Swap arrays
+	T* tmpPtr = m_arrPtr;
+	m_arrPtr = other.m_arrPtr;
+	other.m_arrPtr = tmpPtr;
+	
+	//Swap sizes
+	size_t tmpSize = m_size;
+	m_size = other.m_size;
+	other.m_size = tmpSize;	
+}
+
+template <typename T>
+inline void Vector<T>::clear (){
+	delete[] m_arrPtr;
+	
+	m_arrPtr = NULL;
+	m_size = 0;
+	m_capacity = 0;
 }
 
 
