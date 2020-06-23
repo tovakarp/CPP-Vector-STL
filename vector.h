@@ -84,10 +84,12 @@ template <typename T>
 Vector<T>& Vector<T> :: operator =(const Vector<T> &other){
 
 	try{
+
 		T *tmp = new T[other.m_capacity];
-		
-		for(size_t i = 0; i < m_size; ++i)
+
+		for(size_t i = 0; i < other.m_size; ++i)
 			tmp[i] = other.m_arrPtr[i];
+			
 			
 		delete[] m_arrPtr;
 		
@@ -111,15 +113,10 @@ size_t Vector<T>::size() const {
 }
 
 template <typename T>
-size_t Vector<T>::size() const {
+size_t Vector<T>::max_size() const {
 	return (pow(2, 64) / sizeof(T) ) - 1;
 }
 
-template <typename T>
-size_t Vector<T>::max_size() const{
-	//return std::numeric_limits<vector<T>>::max();
-	return 0;
-}
 
 template <typename T>
 size_t Vector<T>::capacity() const {
