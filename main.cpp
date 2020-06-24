@@ -2,7 +2,7 @@
 
 int main(){
 
-	Vector<int> v1(6, 16), v2, v3(1,0);
+	Vector<int> v1(6, 16), v2 = v1, v3(1,0);
 
 	v2 = v1;
 	
@@ -38,6 +38,17 @@ int main(){
 	v3.erase(0,3);
 	v3.erase(4);
 	std::cout << "v3 erase: " << v3;
+	
+	v1 += v3;
+	
+	std::cout << v1;
+	
+	for(Vector<int>::iterator it = v1.begin(); it < v1.end(); ++it)
+		std::cout << *it << " ";
+		
+	std::cout << std::endl;
+	
+	//Vector<int>::iterator = v1.begin();
 	
 
 	return  0;
